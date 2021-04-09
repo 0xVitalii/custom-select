@@ -36,9 +36,10 @@
 	border-top: 0
 	border-radius: 0 0 6px 6px
 	overflow: hidden
-	transition: opacity $transition / 2
+	transition:  $transition / 2
 	background-color: #fff
 	visibility: visible
+	z-index: 10
 
 .custom-select__dropdown-wrap_hide
 	opacity: 0
@@ -80,3 +81,37 @@
 	font-style: normal
 	border-radius: 3px
 	transition: $transition
+
+
+.custom-select__required::before
+	content: '*'
+	position: absolute
+	color: #EB4A1C
+	top: -15px
+	right: -7px
+
+.custom-select__message
+	color: #721c24 * 2
+	font-size: 13px
+	transition: $transition
+	user-select: none
+
+.custom-select__message_hide
+	opacity: 0
+	visibility: hidden
+
+.custom-select_error-border
+	border-color: #721c24 * 2
+
+
+
+
+#button
+	border: 0
+	border-radius: 6px
+	background-color: $accent
+	color: #fff
+	padding: 4px 30px
+	margin: auto
+	display: block
+	margin-top: 40px

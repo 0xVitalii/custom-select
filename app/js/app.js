@@ -1,25 +1,34 @@
 
 class Select {
 	constructor(settings) {
-		this.selector = '.custom-selector';
+		this.selector = '.custom-select';
 		this.showOptions = 10;
 		Object.assign(this, settings);
 		let selectedFlag = false;
 
-		this.el = document.querySelector(settings.selector);
-		this.input = this.el.querySelector(`${settings.selector}__input`);
-		this.dropdown = this.el.querySelector(`${settings.selector}__dropdown`);
-		this.dropdownWrap = this.el.querySelector(`${settings.selector}__dropdown-wrap`);
-		this.items = this.el.querySelectorAll(`${settings.selector}__item`);
-		this.required = this.input.required;
+		this.el = document.querySelector(this.selector);
+		this.input = this.el.querySelector(`${this.selector}__input`);
+		this._message = this.el.querySelector(`${this.selector}__message`);
+		this.dropdown = this.el.querySelector(`${this.selector}__dropdown`);
+		this.dropdownWrap = this.el.querySelector(`${this.selector}__dropdown-wrap`);
+		this.items = this.el.querySelectorAll(`${this.selector}__item`);
+
 		this.transition = getComputedStyle(this.dropdownWrap).transitionDuration.slice(0, -1) * 1000;
+		this.required = this.input.required;
+
+		console.log(this._message)
 
 		this.input.addEventListener('input', this._inputEvent.bind(this));
 		this.input.addEventListener('focus', this._focusEvent.bind(this));
 		this.input.addEventListener('blur', this._blurEvent.bind(this));
+		this.input.addEventListener('keydown', this._enterEvent.bind(this));
+
 
 		this.itemActive = undefined;
 		this.itemValues = [];
+
+		//Если поле required тогда показать звездочку
+		this.required && this.el.classList.add(`${this.selector.slice(1)}__required`);
 
 		this._dropDownHeight();
 
@@ -39,16 +48,17 @@ class Select {
 	}
 
 	_blurEvent(event) {
-		this.dropdownWrap.classList.add('custom-select__dropdown-wrap_hide');
-		this.el.classList.remove('custom-select_active');
-		setTimeout(this._itemsReset.bind(this), this.transition)
+		this.dropdownWrap.classList.add(`${this.selector.slice(1)}__dropdown-wrap_hide`);
+		this.el.classList.remove(`${this.selector.slice(1)}_active`);
+		setTimeout(this._itemsReset.bind(this), this.transition);
+		this.isValid;
 	}
 
 	_focusEvent(event) {
 		const self = event.target;
 		self.select()
-		this.dropdownWrap.classList.remove('custom-select__dropdown-wrap_hide');
-		this.el.classList.add('custom-select_active');
+		this.dropdownWrap.classList.remove(`${this.selector.slice(1)}__dropdown-wrap_hide`);
+		this.el.classList.add(`${this.selector.slice(1)}_active`);
 	}
 
 	_inputEvent(event) {
@@ -62,10 +72,10 @@ class Select {
 
 			index = dataset.toLowerCase().indexOf(value, 0);
 			if (index == -1) {
-				item.classList.add('custom-select__item_hide');
+				item.classList.add(`${this.selector.slice(1)}__item_hide`);
 			}
 			else {
-				item.classList.remove('custom-select__item_hide');
+				item.classList.remove(`${this.selector.slice(1)}__item_hide`);
 
 				item.innerHTML = `
 				${dataset.slice(0, index)}
@@ -74,9 +84,16 @@ class Select {
 				`;
 			}
 		}
-		this.dropdownWrap.classList.remove('custom-select__dropdown-wrap_hide');
-		this.el.classList.add('custom-select_active');
+		this.dropdownWrap.classList.remove(`${this.selector.slice(1)}__dropdown-wrap_hide`);
+		this.el.classList.add(`${this.selector.slice(1)}_active`);
 		this._dropDownHeight();
+	}
+
+	_enterEvent(event){
+		if(event.keyCode == 13) {
+			const event = new Event("blur", {bubbles : true, cancelable : true});
+			this.input.dispatchEvent(event)
+		}
 	}
 
 	_dropDownHeight() {
@@ -97,8 +114,8 @@ class Select {
 		}
 
 		if (!itemsLength) {
-			this.dropdownWrap.classList.add('custom-select__dropdown-wrap_hide');
-			this.el.classList.remove('custom-select_active');
+			this.dropdownWrap.classList.add(`${this.selector.slice(1)}__dropdown-wrap_hide`);
+			this.el.classList.remove(`${this.selector.slice(1)}_active`);
 		}
 	}
 
@@ -110,6 +127,7 @@ class Select {
 		self.classList.add(`${this.selector.slice(1)}__item_active`);
 
 		this._itemsReset();
+		this.isValid;
 	}
 
 	_itemsReset() {
@@ -121,14 +139,40 @@ class Select {
 		this._dropDownHeight()
 	}
 
+	_errOn(message) {
+		this._message.classList.remove('custom-select__message_hide');
+		this.el.classList.add('custom-select_error-border');
+		this.message = message;
+	}
+
+	_errOff() {
+		this._message.classList.add('custom-select__message_hide');
+		this.el.classList.remove('custom-select_error-border');
+	}
+
 	get isValid() {
 		let flag = false;
 		const inputVal = this.input.value.toLowerCase();
-		if(!inputVal) return false;
+		if (!inputVal && this.required) {
+			this._errOn('Обязательно для заполнения');
+			return false;
+		} else {
+			this._errOff();
+		}
 
 		for (const itemVal of this.itemValues)
-			if (inputVal == itemVal) return true;
+			if (inputVal == itemVal) {
+				this._errOff();
+				return true;
+			}
+			else if (inputVal && inputVal != itemVal) {
+				this._errOn('Выберите из списка');
+			}
 		return false;
+	}
+
+	set message(val) {
+		this._message.innerText = val;
 	}
 }
 
@@ -138,6 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		selector: '.custom-select',
 		showOptions: 10
 	});
-
-	document.querySelector('#ee').addEventListener('click', event => console.log(select.isValid))
+	window.select = select
+	// document.querySelector('#button').addEventListener('click', event => console.log(select.message = 'sajkdfh'))
 })
