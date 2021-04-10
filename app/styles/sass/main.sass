@@ -29,20 +29,21 @@
 
 .custom-select__dropdown-wrap
 	position: absolute
-	top: 51px
+	top: 70px
 	left: -1px
 	width: calc(100% + 2px)
 	border: 1px solid #afb0b9
-	border-top: 0
-	border-radius: 0 0 6px 6px
+	border-radius: 6px
 	overflow: hidden
-	transition:  $transition / 2
+	transition:  $transition
 	background-color: #fff
 	visibility: visible
 	z-index: 10
+	box-shadow: 3px 3px 15px rgba(#000, .3)
 
 .custom-select__dropdown-wrap_hide
 	opacity: 0
+	top: 50px
 	visibility: hidden
 
 .custom-select__dropdown
@@ -92,7 +93,7 @@
 
 .custom-select__message
 	color: #721c24 * 2
-	font-size: 13px
+	font-size: 12px
 	transition: $transition
 	user-select: none
 
@@ -115,3 +116,4 @@
 	margin: auto
 	display: block
 	margin-top: 40px
+	display: none

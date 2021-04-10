@@ -15,8 +15,7 @@ class Select {
 
 		this.transition = getComputedStyle(this.dropdownWrap).transitionDuration.slice(0, -1) * 1000;
 		this.required = this.input.required;
-
-		console.log(this._message)
+		this.visibleItems = this.el.querySelectorAll(':not(.custom-select__item_hide)')
 
 		this.input.addEventListener('input', this._inputEvent.bind(this));
 		this.input.addEventListener('focus', this._focusEvent.bind(this));
@@ -49,7 +48,7 @@ class Select {
 
 	_blurEvent(event) {
 		this.dropdownWrap.classList.add(`${this.selector.slice(1)}__dropdown-wrap_hide`);
-		this.el.classList.remove(`${this.selector.slice(1)}_active`);
+		// this.el.classList.remove(`${this.selector.slice(1)}_active`);
 		setTimeout(this._itemsReset.bind(this), this.transition);
 		this.isValid;
 	}
@@ -58,7 +57,7 @@ class Select {
 		const self = event.target;
 		self.select()
 		this.dropdownWrap.classList.remove(`${this.selector.slice(1)}__dropdown-wrap_hide`);
-		this.el.classList.add(`${this.selector.slice(1)}_active`);
+		// this.el.classList.add(`${this.selector.slice(1)}_active`);
 	}
 
 	_inputEvent(event) {
@@ -85,14 +84,25 @@ class Select {
 			}
 		}
 		this.dropdownWrap.classList.remove(`${this.selector.slice(1)}__dropdown-wrap_hide`);
-		this.el.classList.add(`${this.selector.slice(1)}_active`);
+		// this.el.classList.add(`${this.selector.slice(1)}_active`);
 		this._dropDownHeight();
+		this.visibleItems = this.el.querySelectorAll('.custom-select__item:not(.custom-select__item_hide)');
+
 	}
 
-	_enterEvent(event){
-		if(event.keyCode == 13) {
-			const event = new Event("blur", {bubbles : true, cancelable : true});
-			this.input.dispatchEvent(event)
+	_enterEvent(event) {
+
+		if (event.keyCode == 13) {
+			const blur = new Event("blur", { bubbles: true, cancelable: true });
+			const click = new Event("click", { bubbles: true, cancelable: true });
+
+			const value = event.target.value.toLowerCase();
+			for (const item of this.items)
+				if (item.dataset.val.toLowerCase() == value) {
+					item.dispatchEvent(click);
+					break;
+				}
+			this.input.dispatchEvent(blur);
 		}
 	}
 
@@ -115,7 +125,7 @@ class Select {
 
 		if (!itemsLength) {
 			this.dropdownWrap.classList.add(`${this.selector.slice(1)}__dropdown-wrap_hide`);
-			this.el.classList.remove(`${this.selector.slice(1)}_active`);
+			// this.el.classList.remove(`${this.selector.slice(1)}_active`);
 		}
 	}
 
