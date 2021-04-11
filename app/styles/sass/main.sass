@@ -1,17 +1,17 @@
 @import config
-@import "blocks/**/*"
 
 .custom-select
+	display: inline-block
 	position: relative
 	height: 52px
 	width: 200px
 	border: 1px solid #afb0b9
 	border-radius: 6px 
 	background-color: #fff
-	margin: auto
 	box-sizing: border-box
 	*
 		box-sizing: border-box
+		font-family: $userfont
 
 
 .custom-select_active
@@ -92,28 +92,28 @@
 	right: -7px
 
 .custom-select__message
-	color: #721c24 * 2
+	color: $errorcolor
 	font-size: 12px
 	transition: $transition
 	user-select: none
+	position: absolute
+	top: 100%
+	left: 0
 
 .custom-select__message_hide
 	opacity: 0
 	visibility: hidden
 
 .custom-select_error-border
-	border-color: #721c24 * 2
+	border-color: $errorcolor
 
+body
+	display: flex
+	justify-content: center
+	align-items: center
+	height: 100vh
+	margin: 0
+	padding: 0
 
-
-
-#button
-	border: 0
-	border-radius: 6px
-	background-color: $accent
-	color: #fff
-	padding: 4px 30px
-	margin: auto
-	display: block
-	margin-top: 40px
-	display: none
+.custom-select
+	margin: auto 10px

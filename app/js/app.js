@@ -6,7 +6,9 @@ class Select {
 		Object.assign(this, settings);
 		let selectedFlag = false;
 
-		this.el = document.querySelector(this.selector);
+		if (!this.el)
+			this.el = document.querySelector(this.selector);
+
 		this.input = this.el.querySelector(`${this.selector}__input`);
 		this._message = this.el.querySelector(`${this.selector}__message`);
 		this.dropdown = this.el.querySelector(`${this.selector}__dropdown`);
@@ -34,7 +36,7 @@ class Select {
 		for (const item of this.items) {
 			const value = item.innerHTML;
 			item.dataset.val = value;
-			item.addEventListener('click', this._itemSelected.bind(this));
+			item.addEventListener('mousedown', this._itemSelected.bind(this));
 			this.itemValues.push(value.toLowerCase())
 
 			if (!selectedFlag && item.dataset.selected == 'true') {
@@ -46,18 +48,16 @@ class Select {
 		}
 	}
 
-	_blurEvent(event) {
+	_blurEvent() {
 		this.dropdownWrap.classList.add(`${this.selector.slice(1)}__dropdown-wrap_hide`);
-		// this.el.classList.remove(`${this.selector.slice(1)}_active`);
-		setTimeout(this._itemsReset.bind(this), this.transition);
+		this._itemsReset();
 		this.isValid;
 	}
 
 	_focusEvent(event) {
-		const self = event.target;
-		self.select()
+		this.highlight && event.target.select()
 		this.dropdownWrap.classList.remove(`${this.selector.slice(1)}__dropdown-wrap_hide`);
-		// this.el.classList.add(`${this.selector.slice(1)}_active`);
+		this._dropDownHeight()
 	}
 
 	_inputEvent(event) {
@@ -84,7 +84,6 @@ class Select {
 			}
 		}
 		this.dropdownWrap.classList.remove(`${this.selector.slice(1)}__dropdown-wrap_hide`);
-		// this.el.classList.add(`${this.selector.slice(1)}_active`);
 		this._dropDownHeight();
 		this.visibleItems = this.el.querySelectorAll('.custom-select__item:not(.custom-select__item_hide)');
 
@@ -117,15 +116,13 @@ class Select {
 		if (itemsLength > this.showOptions) {
 			this.dropdownWrap.style.height = `${itemHeight * this.showOptions}px`;
 			this.dropdown.style.overflowY = 'scroll';
-		}
-		else {
+		} else {
 			this.dropdownWrap.style.height = `${(itemHeight * itemsLength) + 1}px`;
 			this.dropdown.style.overflowY = 'hidden';
 		}
 
 		if (!itemsLength) {
 			this.dropdownWrap.classList.add(`${this.selector.slice(1)}__dropdown-wrap_hide`);
-			// this.el.classList.remove(`${this.selector.slice(1)}_active`);
 		}
 	}
 
@@ -161,7 +158,6 @@ class Select {
 	}
 
 	get isValid() {
-		let flag = false;
 		const inputVal = this.input.value.toLowerCase();
 		if (!inputVal && this.required) {
 			this._errOn('Обязательно для заполнения');
@@ -184,14 +180,25 @@ class Select {
 	set message(val) {
 		this._message.innerText = val;
 	}
+
+	static some(settings) {
+		const result = [];
+
+		const elements = document.querySelectorAll('.custom-select');
+		for (const element of elements) {
+			settings.el = element
+			result.push(new Select(settings))
+		}
+
+		return result;
+	}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
 
-	let select = new Select({
-		selector: '.custom-select',
-		showOptions: 10
+	let selects = Select.some({
+		showOptions: 10,
+		highlight: true
 	});
-	window.select = select
 	// document.querySelector('#button').addEventListener('click', event => console.log(select.message = 'sajkdfh'))
 })
