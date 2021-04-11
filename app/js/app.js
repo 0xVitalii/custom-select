@@ -149,7 +149,7 @@ class Select {
 	_errOn(message) {
 		this._message.classList.remove('custom-select__message_hide');
 		this.el.classList.add('custom-select_error-border');
-		this.message = message;
+		this.errorMessage = message;
 	}
 
 	_errOff() {
@@ -177,7 +177,7 @@ class Select {
 		return false;
 	}
 
-	set message(val) {
+	set errorMessage(val) {
 		this._message.innerText = val;
 	}
 
@@ -200,5 +200,4 @@ document.addEventListener('DOMContentLoaded', () => {
 		showOptions: 10,
 		highlight: true
 	});
-	// document.querySelector('#button').addEventListener('click', event => console.log(select.message = 'sajkdfh'))
 })
